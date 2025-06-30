@@ -1,0 +1,33 @@
+@import './variables.scss';
+
+.search {
+  margin-bottom: rem-calc(15);
+  &__input {
+    width: 100%;
+    padding: rem-calc(8);
+    border: 1px solid $color-border;
+    border-radius: rem-calc(4);
+    font-size: rem-calc(14);
+  }
+  &__filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: rem-calc(10);
+    margin-bottom: rem-calc(15);
+    .search__filter-group {
+      display: flex;
+      flex-direction: column;
+      label {
+        font-size: rem-calc(12);
+        margin-bottom: rem-calc(4);
+        color: $color-accent;
+      }
+      input {
+        padding: rem-calc(6);
+        border: 1px solid $color-border;
+        border-radius: rem-calc(4);
+        font-size: rem-calc(12);
+      }
+    }
+  }
+} 
