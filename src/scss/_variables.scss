@@ -1,0 +1,11 @@
+@use 'sass:math';
+
+$color-accent: #42b983;
+$color-bg-header: #222;
+$color-border: #444;
+$color-error: #e53935;
+$color-highlight: #d4bb2e;
+
+@function rem-calc($px) {
+  @return calc(#{math.div($px, 16)}rem);
+} 

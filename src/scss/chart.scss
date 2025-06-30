@@ -1,0 +1,33 @@
+@import './variables.scss';
+
+.chart {
+  margin-top: rem-calc(30);
+  h2 {
+    margin-bottom: rem-calc(10);
+  }
+  &__bars {
+    display: flex;
+    align-items: flex-end;
+    height: rem-calc(100);
+    gap: rem-calc(4);
+    width: 100%;
+    max-width: rem-calc(800);
+    overflow-x: auto;
+    padding-bottom: rem-calc(10);
+  }
+  &__bar {
+    flex-shrink: 0;
+    width: rem-calc(20);
+    background: $color-accent;
+    display: inline-block;
+    transition: height 0.3s ease;
+    min-height: rem-calc(2);
+    border-radius: rem-calc(2) rem-calc(2) 0 0;
+  }
+  &__highlight {
+    background: $color-highlight;
+    color: #222;
+    border-radius: 2px;
+    padding: 0 2px;
+  }
+} 
