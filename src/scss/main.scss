@@ -1,9 +1,11 @@
-@import './variables.scss';
-@import './chart.scss';
-@import './search.scss';
-@import './table.scss';
-@import './nav.scss';
-@import './dashboard.scss';
+@use 'sass:color';
+@use 'sass:math';
+@use './variables.scss' as *;
+@use './chart.scss' as *;
+@use './search.scss' as *;
+@use './table.scss' as *;
+@use './nav.scss' as *;
+@use './dashboard.scss' as *;
 
 .main-container {
   max-width: 1200px;

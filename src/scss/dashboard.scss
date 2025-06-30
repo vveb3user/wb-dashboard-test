@@ -1,3 +1,7 @@
+@use 'sass:color';
+@use 'sass:math';
+@use './variables.scss' as *;
+
 .dashboard {
   padding: rem-calc(20);
   max-width: rem-calc(1200);

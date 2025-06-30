@@ -1,4 +1,6 @@
-@import './variables.scss';
+@use 'sass:color';
+@use 'sass:math';
+@use './variables.scss' as *;
 
 .search {
   margin-bottom: rem-calc(15);

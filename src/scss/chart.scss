@@ -1,4 +1,6 @@
-@import './variables.scss';
+@use 'sass:color';
+@use 'sass:math';
+@use './variables.scss' as *;
 
 .chart {
   margin-top: rem-calc(30);
@@ -52,7 +54,7 @@
 
   &__bar {
     width: rem-calc(40);
-    background: linear-gradient(to top, $color-accent, lighten($color-accent, 20%));
+    background: linear-gradient(to top, $color-accent, color.adjust($color-accent, $lightness: 20%));
     display: block;
     transition: all 0.3s ease;
     min-height: rem-calc(4);
@@ -62,7 +64,7 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     
     &:hover {
-      background: linear-gradient(to top, darken($color-accent, 10%), $color-accent);
+      background: linear-gradient(to top, color.adjust($color-accent, $lightness: -10%), $color-accent);
       transform: scale(1.05);
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
