@@ -2,28 +2,138 @@
 
 .chart {
   margin-top: rem-calc(30);
+  margin-bottom: rem-calc(40);
+  
   h2 {
-    margin-bottom: rem-calc(10);
+    margin-bottom: rem-calc(20);
+    text-align: center;
+    color: $color-accent;
+    font-size: rem-calc(24);
   }
+
+  &__container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: rem-calc(20);
+    margin: 0 auto;
+    max-width: rem-calc(1200);
+    position: relative;
+    padding-bottom: rem-calc(40);
+    min-height: rem-calc(440);
+  }
+
   &__bars {
     display: flex;
     align-items: flex-end;
-    height: rem-calc(100);
-    gap: rem-calc(4);
-    width: 100%;
-    max-width: rem-calc(800);
-    overflow-x: auto;
-    padding-bottom: rem-calc(10);
+    gap: rem-calc(8);
+    height: rem-calc(400);
+    position: relative;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: $color-border;
+      z-index: 1;
+    }
   }
+
+  &__bar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: rem-calc(60);
+    position: relative;
+  }
+
   &__bar {
-    flex-shrink: 0;
-    width: rem-calc(20);
-    background: $color-accent;
-    display: inline-block;
-    transition: height 0.3s ease;
-    min-height: rem-calc(2);
-    border-radius: rem-calc(2) rem-calc(2) 0 0;
+    width: rem-calc(40);
+    background: linear-gradient(to top, $color-accent, lighten($color-accent, 20%));
+    display: block;
+    transition: all 0.3s ease;
+    min-height: rem-calc(4);
+    border-radius: rem-calc(4) rem-calc(4) 0 0;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    
+    &:hover {
+      background: linear-gradient(to top, darken($color-accent, 10%), $color-accent);
+      transform: scale(1.05);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
   }
+
+  &__bar-label {
+    margin-top: rem-calc(18);
+    text-align: center;
+    width: 100%;
+    min-height: rem-calc(38);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  &__bar-title {
+    font-size: rem-calc(9);
+    color: $color-text;
+    margin-bottom: rem-calc(2);
+    line-height: 1.2;
+    max-width: rem-calc(60);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    word-break: break-all;
+  }
+
+  &__bar-value {
+    font-size: rem-calc(12);
+    font-weight: bold;
+    color: $color-accent;
+  }
+
+  &__y-axis {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: rem-calc(400);
+    margin-right: rem-calc(10);
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      width: 1px;
+      background: $color-border;
+    }
+  }
+
+  &__y-label {
+    font-size: rem-calc(12);
+    color: $color-text;
+    text-align: right;
+    padding-right: rem-calc(8);
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: rem-calc(-10);
+      width: rem-calc(8);
+      height: 1px;
+      background: $color-border;
+    }
+  }
+
   &__highlight {
     background: $color-highlight;
     color: #222;

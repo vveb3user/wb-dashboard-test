@@ -14,14 +14,31 @@
     </div>
     <div class="chart">
       <h2>Chart by Quantity (Top 10)</h2>
-      <div class="chart__bars">
-        <div
-          v-for="(row, index) in chartData"
-          :key="'chart-' + row.income_id + '-' + index"
-          class="chart__bar"
-          :title="`${row.supplier_article}: ${row.quantity}`"
-          :style="{ height: (Number(row.quantity) / maxQuantity * 100) + 'px' }"
-        ></div>
+      <div class="chart__container">
+        <div class="chart__bars">
+          <div
+            v-for="(row, index) in chartData"
+            :key="'chart-' + row.income_id + '-' + index"
+            class="chart__bar-wrapper"
+          >
+            <div
+              class="chart__bar"
+              :title="`${row.supplier_article}: ${row.quantity} шт.`"
+              :style="{ height: (Number(row.quantity) / maxQuantity * 300) + 'px' }"
+            ></div>
+            <div class="chart__bar-label">
+              <div class="chart__bar-title">{{ row.supplier_article }}</div>
+              <div class="chart__bar-value">{{ row.quantity }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="chart__y-axis">
+          <div class="chart__y-label">{{ maxQuantity }}</div>
+          <div class="chart__y-label">{{ Math.round(maxQuantity * 0.75) }}</div>
+          <div class="chart__y-label">{{ Math.round(maxQuantity * 0.5) }}</div>
+          <div class="chart__y-label">{{ Math.round(maxQuantity * 0.25) }}</div>
+          <div class="chart__y-label">0</div>
+        </div>
       </div>
     </div>
     <div class="search">
