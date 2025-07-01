@@ -8,6 +8,8 @@
       @update:dateTo="val => dateTo = val"
       @load="fetchAllOrders"
     />
+    <div v-if="error" class="table__error">{{ error }}</div>
+    <div v-if="progress">{{ progress }}</div>
     <Chart 
       title="Chart by Quantity (Top 10)"
       :chartData="chartData"
@@ -25,32 +27,21 @@
       :filters="columnFilters"
       @update:filter="updateColumnFilter"
     />
-    <div v-if="error" class="table__error">{{ error }}</div>
-    <div v-if="progress">{{ progress }}</div>
     <Pagination
       :currentPage="page"
       :hasMore="hasMore"
       @prev="prevPage"
       @next="nextPage"
     />
-    <table v-if="!loading && orders.length" class="table">
-      <thead>
-        <tr>
-          <th v-for="key in tableHeaders" :key="key" :class="key">{{ tableHeaderLabels[key] }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(row, index) in orders" :key="row.order_id + '-' + index">
-          <td v-for="key in tableHeaders" :key="key" :class="key">
-            <span v-if="key === 'g_number'">
-              <a href="#" @click.prevent="showDetails(row)" v-html="highlightMatch(row[key])"></a>
-            </span>
-            <span v-else v-html="highlightMatch(row[key])"></span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div v-else-if="!loading">No data</div>
+    <DataTable
+      :data="orders"
+      :headers="tableHeaders"
+      :labels="tableHeaderLabels"
+      :loading="loading"
+      popupKey="g_number"
+      :searchQuery="activeSearchQuery"
+      @showDetails="showDetails"
+    />
 
     <DetailsPopup
       :data="popupData"
@@ -70,6 +61,7 @@ import SearchBar from '../components/SearchBar.vue'
 import ColumnFilters from '../components/ColumnFilters.vue'
 import Pagination from '../components/Pagination.vue'
 import DetailsPopup from '../components/DetailsPopup.vue'
+import DataTable from '../components/DataTable.vue'
 import '../scss/dashboard.scss'
 
 function formatDate(date) {
@@ -101,31 +93,6 @@ const tableHeaderLabels = {
   last_change_date: 'Дата изменения',
   supplier_article: 'Артикул поставщика',
   tech_size: 'Размер',
-  // остальные для попапа:
-  order_id: 'ID заказа',
-  warehouse_name: 'Склад',
-  oblast_okrug_name: 'Округ',
-  oblast_name: 'Область',
-  region_name: 'Регион',
-  country_name: 'Страна',
-  subject: 'Предмет',
-  category: 'Категория',
-  brand: 'Бренд',
-  barcode: 'Штрихкод',
-  nm_id: 'NM ID',
-  income_id: 'ID прихода',
-  is_realization: 'Реализация',
-  is_supply: 'Поставка',
-  odid: 'ODID',
-  spp: 'СПП',
-  price_with_disc: 'Цена со скидкой',
-  discount_percent: 'Скидка, %',
-  finished_price: 'Итоговая цена',
-  for_pay: 'К выплате',
-  promo_code_discount: 'Скидка по промокоду',
-  promo_code: 'Промокод',
-  sticker: 'Стикер',
-  srid: 'SRID'
 }
 
 tableHeaders.forEach(header => {
@@ -281,12 +248,7 @@ watch(
   }
 );
 
-function highlightMatch(value) {
-  const query = activeSearchQuery.value
-  if (!query) return String(value)
-  const re = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
-  return String(value).replace(re, '<span class="chart__highlight">$1</span>')
-}
+
 
 onMounted(fetchAllOrders)
 </script>

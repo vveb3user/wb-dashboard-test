@@ -8,6 +8,9 @@
       @update:dateTo="val => dateTo = val"
       @load="fetchAllIncomes"
     />
+    <div v-if="error" class="table__error">{{ error }}</div>
+    <div v-if="loading">Loading...</div>
+    <div v-if="progress">{{ progress }}</div>
     <Chart 
       title="Chart by Quantity (Top 10)"
       :chartData="chartData"
@@ -25,33 +28,21 @@
       :filters="columnFilters"
       @update:filter="updateColumnFilter"
     />
-    <div v-if="error" class="table__error">{{ error }}</div>
-    <div v-if="loading">Loading...</div>
-    <div v-if="progress">{{ progress }}</div>
     <Pagination
       :currentPage="page"
       :hasMore="hasMore"
       @prev="prevPage"
       @next="nextPage"
     />
-    <table v-if="!loading && incomes.length" class="table">
-      <thead>
-        <tr>
-          <th v-for="key in tableHeaders" :key="key" :class="key">{{ tableHeaderLabels[key] }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(row, index) in incomes" :key="row.income_id + '-' + index">
-          <td v-for="key in tableHeaders" :key="key" :class="key">
-            <span v-if="key === 'income_id'">
-              <a href="#" @click.prevent="showDetails(row)" v-html="highlightMatch(row[key])"></a>
-            </span>
-            <span v-else v-html="highlightMatch(row[key])"></span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div v-else-if="!loading">No data</div>
+    <DataTable
+      :data="incomes"
+      :headers="tableHeaders"
+      :labels="tableHeaderLabels"
+      :loading="loading"
+      popupKey="income_id"
+      :searchQuery="activeSearchQuery"
+      @showDetails="showDetails"
+    />
 
     <DetailsPopup
       :data="popupData"
@@ -71,6 +62,7 @@ import SearchBar from '../components/SearchBar.vue'
 import ColumnFilters from '../components/ColumnFilters.vue'
 import Pagination from '../components/Pagination.vue'
 import DetailsPopup from '../components/DetailsPopup.vue'
+import DataTable from '../components/DataTable.vue'
 import '../scss/dashboard.scss'
 
 // Format date as YYYY-MM-DD
@@ -105,20 +97,6 @@ const tableHeaderLabels = {
   quantity: 'Количество',
   total_price: 'Общая цена',
   warehouse_name: 'Склад',
-  // остальные для попапа:
-  last_change_date: 'Дата изменения',
-  tech_size: 'Размер',
-  barcode: 'Штрихкод',
-  category: 'Категория',
-  country_name: 'Страна',
-  brand: 'Бренд',
-  subject: 'Предмет',
-  nm_id: 'NM ID',
-  oblast_okrug_name: 'Округ',
-  oblast_name: 'Область',
-  region_name: 'Регион',
-  sticker: 'Стикер',
-  srid: 'SRID'
 }
 
 // Инициализируем фильтры для всех колонок
@@ -272,12 +250,7 @@ watch(
   }
 );
 
-function highlightMatch(value) {
-  const query = activeSearchQuery.value
-  if (!query) return String(value)
-  const re = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
-  return String(value).replace(re, '<span class="chart__highlight">$1</span>')
-}
+
 
 onMounted(fetchAllIncomes)
 </script>

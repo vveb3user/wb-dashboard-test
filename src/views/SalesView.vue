@@ -8,6 +8,8 @@
       @update:dateTo="val => dateTo = val"
       @load="fetchAllSales"
     />
+    <div v-if="error" class="table__error">{{ error }}</div>
+    <div v-if="progress">{{ progress }}</div>
     <Chart 
       title="Chart by Sales Count (Top 10)"
       :chartData="chartData"
@@ -25,32 +27,21 @@
       :filters="columnFilters"
       @update:filter="updateColumnFilter"
     />
-    <div v-if="error" class="table__error">{{ error }}</div>
-    <div v-if="progress">{{ progress }}</div>
     <Pagination
       :currentPage="page"
       :hasMore="hasMore"
       @prev="prevPage"
       @next="nextPage"
     />
-    <table v-if="!loading && sales.length" class="table">
-      <thead>
-        <tr>
-          <th v-for="key in tableHeaders" :key="key" :class="key">{{ tableHeaderLabels[key] }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(row, index) in sales" :key="row.sale_id + '-' + index">
-          <td v-for="key in tableHeaders" :key="key" :class="key">
-            <span v-if="key === 'sale_id'">
-              <a href="#" @click.prevent="showDetails(row)" v-html="highlightMatch(row[key])"></a>
-            </span>
-            <span v-else v-html="highlightMatch(formatValue(row[key], key))"></span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div v-else-if="!loading">No data</div>
+    <DataTable
+      :data="sales"
+      :headers="tableHeaders"
+      :labels="tableHeaderLabels"
+      :loading="loading"
+      popupKey="sale_id"
+      :searchQuery="activeSearchQuery"
+      @showDetails="showDetails"
+    />
 
     <DetailsPopup
       :data="popupData"
@@ -70,6 +61,7 @@ import SearchBar from '../components/SearchBar.vue'
 import ColumnFilters from '../components/ColumnFilters.vue'
 import Pagination from '../components/Pagination.vue'
 import DetailsPopup from '../components/DetailsPopup.vue'
+import DataTable from '../components/DataTable.vue'
 import '../scss/dashboard.scss'
 
 function formatDate(date) {
@@ -270,34 +262,11 @@ watch(
   }
 )
 
-function highlightMatch(value) {
-  const query = activeSearchQuery.value
-  if (!query) return String(value)
-  const re = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
-  return String(value).replace(re, '<span class=\"chart__highlight\">$1</span>')
-}
-
-
-
 function showDetails(row) {
   popupData.value = row
 }
 function closePopup() {
   popupData.value = null
-}
-
-function formatValue(val, key) {
-  // Округляем числа до сотых
-  if (typeof val === 'number') {
-    return val.toFixed(2)
-  }
-  if (!isNaN(val) && val !== '' && val !== null && val !== undefined && val !== false && val !== true) {
-    const num = Number(val)
-    if (!isNaN(num) && String(num) === String(val)) {
-      return num.toFixed(2)
-    }
-  }
-  return val
 }
 
 onMounted(fetchAllSales)
