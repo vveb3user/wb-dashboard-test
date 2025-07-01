@@ -336,4 +336,4 @@ onMounted(fetchAllSales)
   max-width: 1200px;
 }
 
-</style>
+</style> 
