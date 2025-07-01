@@ -28,11 +28,12 @@
     <div v-if="error" class="table__error">{{ error }}</div>
     <div v-if="loading">Loading...</div>
     <div v-if="progress">{{ progress }}</div>
-    <div class="table__pagination">
-      <button @click="prevPage" :disabled="page === 1">Prev</button>
-      <span>Page {{ page }}</span>
-      <button @click="nextPage" :disabled="!hasMore">Next</button>
-    </div>
+    <Pagination
+      :currentPage="page"
+      :hasMore="hasMore"
+      @prev="prevPage"
+      @next="nextPage"
+    />
     <table v-if="!loading && incomes.length" class="table">
       <thead>
         <tr>
@@ -56,6 +57,7 @@ import DateFilter from '../components/DateFilter.vue'
 import Chart from '../components/Chart.vue'
 import SearchBar from '../components/SearchBar.vue'
 import ColumnFilters from '../components/ColumnFilters.vue'
+import Pagination from '../components/Pagination.vue'
 import '../scss/dashboard.scss'
 
 // Format date as YYYY-MM-DD
