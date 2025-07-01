@@ -268,9 +268,3 @@ function highlightMatch(value) {
 
 onMounted(fetchAllOrders)
 </script>
-
-<style scoped>
-.orders-page {
-  padding: 20px;
-}
-</style> 
