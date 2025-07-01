@@ -11,7 +11,7 @@
     <div v-if="error" class="table__error">{{ error }}</div>
     <div v-if="progress">{{ progress }}</div>
     <Chart 
-      title="Chart by Quantity (Top 10)"
+      title="Топ-10 по количеству"
       :chartData="chartData"
       :maxQuantity="maxQuantity"
       dataKey="supplier_article"

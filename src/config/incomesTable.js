@@ -14,4 +14,10 @@ export const incomesTableLabels = {
   quantity: 'Количество',
   total_price: 'Общая цена',
   warehouse_name: 'Склад',
+  number: 'Внутренний номер',
+  last_change_date: 'Дата изменения',
+  tech_size: 'Размер',
+  barcode: 'Штрихкод',
+  date_close: 'Дата закрытия',
+  nm_id: 'NM ID'
 } 
