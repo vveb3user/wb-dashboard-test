@@ -15,15 +15,10 @@
       dataKey="supplier_article"
       valueKey="quantity"
     />
-    <div class="search">
-      <input 
-        type="text" 
-        v-model="searchQuery" 
-        placeholder="Search in table..." 
-        class="search__input"
-      />
-      <button @click="applySearch">Найти</button>
-    </div>
+    <SearchBar 
+      v-model="searchQuery"
+      @search="applySearch"
+    />
     <div class="search__filters">
       <div v-for="header in tableHeaders" :key="header" class="search__filter-group">
         <label>{{ tableHeaderLabels[header] }}</label>
@@ -51,7 +46,7 @@
         <tr v-for="(row, index) in sales" :key="row.sale_id + '-' + index">
           <td v-for="key in tableHeaders" :key="key" :class="key">
             <span v-if="key === 'sale_id'">
-              <a href="#" @click.prevent="showDetails(row)">{{ row[key] }}</a>
+              <a href="#" @click.prevent="showDetails(row)" v-html="highlightMatch(row[key])"></a>
             </span>
             <span v-else v-html="highlightMatch(formatValue(row[key], key))"></span>
           </td>
@@ -80,6 +75,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import axios from 'axios'
 import DateFilter from '../components/DateFilter.vue'
 import Chart from '../components/Chart.vue'
+import SearchBar from '../components/SearchBar.vue'
 import '../scss/dashboard.scss'
 
 function formatDate(date) {

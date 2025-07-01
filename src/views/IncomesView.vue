@@ -15,15 +15,10 @@
       dataKey="supplier_article"
       valueKey="quantity"
     />
-    <div class="search">
-      <input 
-        type="text" 
-        v-model="searchQuery" 
-        placeholder="Search in table..." 
-        class="search__input"
-      />
-      <button @click="applySearch">Найти</button>
-    </div>
+    <SearchBar 
+      v-model="searchQuery"
+      @search="applySearch"
+    />
     <div class="search__filters">
       <div v-for="header in tableHeaders" :key="header" class="search__filter-group">
         <label>{{ header }}:</label>
@@ -63,6 +58,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import axios from 'axios'
 import DateFilter from '../components/DateFilter.vue'
 import Chart from '../components/Chart.vue'
+import SearchBar from '../components/SearchBar.vue'
 import '../scss/dashboard.scss'
 
 // Format date as YYYY-MM-DD
