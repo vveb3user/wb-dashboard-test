@@ -65,11 +65,8 @@ import { usePagination } from '../composables/usePagination.js'
 import { useTableFilters } from '../composables/useTableFilters.js'
 import { useApiData } from '../composables/useApiData.js'
 import { incomesTableHeaders, incomesTableLabels } from '../config/incomesTable.js'
+import { formatDate } from '../utils/dateUtils.js'
 import '../scss/dashboard.scss'
-
-function formatDate(date) {
-  return date.toISOString().slice(0, 10)
-}
 
 const today = new Date()
 const oneWeekAgo = new Date()
