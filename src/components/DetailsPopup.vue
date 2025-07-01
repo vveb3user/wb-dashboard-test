@@ -1,14 +1,14 @@
 <template>
-  <div v-if="data" class="popup-overlay" @click.self="$emit('close')">
-    <div class="popup popup--large">
-      <h3 class="popup__title">{{ title }}</h3>
-      <table class="popup__table">
+  <div v-if="data" class="details-popup-overlay" @click.self="$emit('close')">
+    <div class="details-popup details-popup--large">
+      <h3 class="details-popup__title">{{ title }}</h3>
+      <table class="details-popup__table">
         <tr v-for="(value, key) in data" :key="key">
           <td><b>{{ labels[key] || key }}</b></td>
           <td>{{ formatValue(value, key) }}</td>
         </tr>
       </table>
-      <button class="popup__button" @click="$emit('close')">Закрыть</button>
+      <button class="details-popup__button" @click="$emit('close')">Закрыть</button>
     </div>
   </div>
 </template>

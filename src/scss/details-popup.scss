@@ -2,7 +2,7 @@
 @use 'sass:math';
 @use './variables.scss' as *;
 
-.popup-overlay {
+.details-popup-overlay {
   position: fixed;
   top: 0; 
   left: 0; 
@@ -15,7 +15,7 @@
   z-index: 1000;
 }
 
-.popup {
+.details-popup {
   background: $color-bg-header;
   color: $color-accent;
   padding: rem-calc(32) rem-calc(24) rem-calc(24) rem-calc(24);

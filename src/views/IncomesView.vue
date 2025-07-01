@@ -40,14 +40,14 @@
       :loading="loading"
       popupKey="income_id"
       :searchQuery="activeSearchQuery"
-      @showDetails="showDetails"
+      @showDetails="showDetailsPopup"
     />
 
     <DetailsPopup
-      :data="popupData"
+      :data="detailsPopupData"
       title="Детали прихода"
       :labels="tableHeaderLabels"
-      @close="closePopup"
+      @close="closeDetailsPopup"
     />
   </div>
 </template>
@@ -64,6 +64,7 @@ import DataTable from '../components/DataTable.vue'
 import { usePagination } from '../composables/usePagination.js'
 import { useTableFilters } from '../composables/useTableFilters.js'
 import { useApiData } from '../composables/useApiData.js'
+import { useDetailsPopup } from '../composables/useDetailsPopup.js'
 import { incomesTableHeaders, incomesTableLabels } from '../config/incomesTable.js'
 import { formatDate } from '../utils/dateUtils.js'
 import '../scss/dashboard.scss'
@@ -77,7 +78,6 @@ const incomes = ref([])
 const tableHeaders = incomesTableHeaders
 const tableHeaderLabels = incomesTableLabels
 const limit = 50
-const popupData = ref(null)
 
 const { 
   page, 
@@ -104,6 +104,12 @@ const {
   allData: allIncomes, 
   fetchAllData 
 } = useApiData('incomes', dateFrom, dateTo, limit)
+
+const { 
+  detailsPopupData, 
+  showDetailsPopup, 
+  closeDetailsPopup 
+} = useDetailsPopup()
 
 const filteredIncomes = computed(() => {
   return filterData(allIncomes.value)
@@ -138,13 +144,6 @@ function updatePageIncomes() {
 watch(page, () => {
   updatePageIncomes()
 })
-
-function showDetails(row) {
-  popupData.value = row
-}
-function closePopup() {
-  popupData.value = null
-}
 
 onMounted(fetchAllIncomes)
 </script>

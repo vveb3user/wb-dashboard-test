@@ -40,14 +40,14 @@
       :loading="loading"
       popupKey="g_number"
       :searchQuery="activeSearchQuery"
-      @showDetails="showDetails"
+      @showDetails="showDetailsPopup"
     />
 
     <DetailsPopup
-      :data="popupData"
+      :data="detailsPopupData"
       title="Детали заказа"
       :labels="tableHeaderLabels"
-      @close="closePopup"
+      @close="closeDetailsPopup"
     />
   </div>
 </template>
@@ -64,6 +64,7 @@ import DataTable from '../components/DataTable.vue'
 import { usePagination } from '../composables/usePagination.js'
 import { useTableFilters } from '../composables/useTableFilters.js'
 import { useApiData } from '../composables/useApiData.js'
+import { useDetailsPopup } from '../composables/useDetailsPopup.js'
 import { ordersTableHeaders, ordersTableLabels } from '../config/ordersTable.js'
 import { formatDate } from '../utils/dateUtils.js'
 import '../scss/dashboard.scss'
@@ -77,7 +78,6 @@ const orders = ref([])
 const tableHeaders = ordersTableHeaders
 const tableHeaderLabels = ordersTableLabels
 const limit = 50
-const popupData = ref(null)
 
 const { 
   page, 
@@ -104,6 +104,12 @@ const {
   allData: allOrders, 
   fetchAllData 
 } = useApiData('orders', dateFrom, dateTo, limit)
+
+const { 
+  detailsPopupData, 
+  showDetailsPopup, 
+  closeDetailsPopup 
+} = useDetailsPopup()
 
 const filteredOrders = computed(() => {
   return filterData(allOrders.value)
@@ -138,13 +144,6 @@ function updatePageOrders() {
 watch(page, () => {
   updatePageOrders()
 })
-
-function showDetails(row) {
-  popupData.value = row
-}
-function closePopup() {
-  popupData.value = null
-}
 
 onMounted(fetchAllOrders)
 </script>
