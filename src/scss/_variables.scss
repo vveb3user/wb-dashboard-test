@@ -7,6 +7,8 @@ $color-border: #444;
 $color-error: #e53935;
 $color-highlight: #d4bb2e;
 $color-text: #333;
+$color-overlay: rgba(0, 0, 0, 0.4);
+$color-shadow: rgba(0, 0, 0, 0.4);
 
 @function rem-calc($px) {
   @return calc(#{math.div($px, 16)}rem);

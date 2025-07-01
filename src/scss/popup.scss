@@ -1,0 +1,70 @@
+@use 'sass:color';
+@use 'sass:math';
+@use './variables.scss' as *;
+
+.popup-overlay {
+  position: fixed;
+  top: 0; 
+  left: 0; 
+  right: 0; 
+  bottom: 0;
+  background: $color-overlay;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.popup {
+  background: $color-bg-header;
+  color: $color-accent;
+  padding: rem-calc(32) rem-calc(24) rem-calc(24) rem-calc(24);
+  border-radius: rem-calc(12);
+  min-width: rem-calc(540);
+  max-width: rem-calc(1200);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 rem-calc(8) rem-calc(32) $color-shadow;
+
+  &--large {
+    min-width: rem-calc(540);
+    max-width: rem-calc(1200);
+  }
+
+  &__title {
+    margin-bottom: rem-calc(18);
+    color: $color-accent;
+  }
+
+  &__button {
+    margin-top: rem-calc(8);
+    padding: rem-calc(6) rem-calc(18);
+    background: $color-border;
+    color: $color-accent;
+    border: none;
+    border-radius: rem-calc(4);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background: color.adjust($color-border, $lightness: 10%);
+    }
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: rem-calc(18);
+
+    td {
+      padding: rem-calc(4) rem-calc(8);
+      border-bottom: 1px solid $color-border;
+
+      &:first-child {
+        font-weight: bold;
+        color: $color-highlight;
+        width: rem-calc(220);
+      }
+    }
+  }
+} 
