@@ -54,7 +54,6 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import axios from 'axios'
 import DateFilter from '../components/DateFilter.vue'
 import Chart from '../components/Chart.vue'
 import SearchBar from '../components/SearchBar.vue'
@@ -64,6 +63,7 @@ import DetailsPopup from '../components/DetailsPopup.vue'
 import DataTable from '../components/DataTable.vue'
 import { usePagination } from '../composables/usePagination.js'
 import { useTableFilters } from '../composables/useTableFilters.js'
+import { useApiData } from '../composables/useApiData.js'
 import '../scss/dashboard.scss'
 
 function formatDate(date) {
@@ -71,13 +71,11 @@ function formatDate(date) {
 }
 
 const today = new Date()
-const twoWeeksAgo = new Date()
-twoWeeksAgo.setDate(today.getDate() - 14)
+const oneWeekAgo = new Date()
+oneWeekAgo.setDate(today.getDate() - 7)
 const dateTo = ref(formatDate(today))
-const dateFrom = ref(formatDate(twoWeeksAgo))
+const dateFrom = ref(formatDate(oneWeekAgo))
 const incomes = ref([])
-const loading = ref(false)
-const error = ref('')
 const tableHeaders = [
   'income_id',
   'date',
@@ -95,10 +93,7 @@ const tableHeaderLabels = {
   warehouse_name: 'Склад',
 }
 
-const allIncomes = ref([])
-const progress = ref('')
 const limit = 50
-const maxPages = 50
 const popupData = ref(null)
 
 const { 
@@ -118,6 +113,14 @@ const {
   updateColumnFilter, 
   filterData 
 } = useTableFilters(tableHeaders, resetPage, updatePageIncomes)
+
+const { 
+  loading, 
+  error, 
+  progress, 
+  allData: allIncomes, 
+  fetchAllData 
+} = useApiData('incomes', dateFrom, dateTo, limit)
 
 const filteredIncomes = computed(() => {
   return filterData(allIncomes.value)
@@ -141,58 +144,8 @@ const chartData = computed(() => {
   return chartArr.sort((a, b) => b.quantity - a.quantity).slice(0, 10)
 })
 
-const fetchAllIncomes = async () => {
-  loading.value = true
-  error.value = ''
-  allIncomes.value = []
-  progress.value = ''
-  let currentPage = 1
-  let fetched = []
-  try {
-    while (currentPage <= maxPages) {
-      try {
-        progress.value = `Загружается страница ${currentPage}...`
-        const response = await axios.get('http://109.73.206.144:6969/api/incomes', {
-          params: {
-            dateFrom: dateFrom.value,
-            dateTo: dateTo.value,
-            page: currentPage,
-            limit: limit,
-            key: 'E6kUTYrYwZq2tN4QEtyzsbEBk3ie'
-          }
-        })
-        const data = response.data.data || response.data
-        if (!data.length) break
-        fetched = fetched.concat(data)
-        if (data.length < limit) break
-        currentPage++
-        await new Promise(res => setTimeout(res, 300))
-      } catch (err) {
-        if (err.response && err.response.status === 429) {
-          error.value = 'Слишком много запросов к API. Попробуйте уменьшить диапазон дат или повторите попытку позже.'
-          break
-        } else {
-          throw err
-        }
-      }
-    }
-    if (currentPage > maxPages) {
-      error.value = 'Достигнут лимит по страницам (' + maxPages + '). Уточните период.'
-    }
-    allIncomes.value = fetched
-    resetPage()
-    progress.value = ''
-    updatePageIncomes()
-    hasMore.value = allIncomes.value.length > limit
-  } catch (e) {
-    error.value = 'Failed to load all data: ' + (e?.message || e)
-    allIncomes.value = []
-    incomes.value = []
-    hasMore.value = false
-    progress.value = ''
-  } finally {
-    loading.value = false
-  }
+const fetchAllIncomes = () => {
+  fetchAllData(updatePageIncomes, resetPage, hasMore)
 }
 
 function updatePageIncomes() {
