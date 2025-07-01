@@ -8,35 +8,13 @@
       @update:dateTo="val => dateTo = val"
       @load="fetchAllSales"
     />
-    <div class="chart">
-      <h2>Chart by Sales Count (Top 10)</h2>
-      <div class="chart__container">
-        <div class="chart__bars">
-          <div
-            v-for="(row, index) in chartData"
-            :key="'chart-' + row.supplier_article + '-' + index"
-            class="chart__bar-wrapper"
-          >
-            <div
-              class="chart__bar"
-              :title="`${row.supplier_article}: ${row.quantity} шт.`"
-              :style="{ height: (Number(row.quantity) / maxQuantity * 300) + 'px' }"
-            ></div>
-            <div class="chart__bar-label">
-              <div class="chart__bar-title">{{ row.supplier_article }}</div>
-              <div class="chart__bar-value">{{ row.quantity }}</div>
-            </div>
-          </div>
-        </div>
-        <div class="chart__y-axis">
-          <div class="chart__y-label">{{ maxQuantity }}</div>
-          <div class="chart__y-label">{{ Math.round(maxQuantity * 0.75) }}</div>
-          <div class="chart__y-label">{{ Math.round(maxQuantity * 0.5) }}</div>
-          <div class="chart__y-label">{{ Math.round(maxQuantity * 0.25) }}</div>
-          <div class="chart__y-label">0</div>
-        </div>
-      </div>
-    </div>
+    <Chart 
+      title="Chart by Sales Count (Top 10)"
+      :chartData="chartData"
+      :maxQuantity="maxQuantity"
+      dataKey="supplier_article"
+      valueKey="quantity"
+    />
     <div class="search">
       <input 
         type="text" 
@@ -101,6 +79,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import axios from 'axios'
 import DateFilter from '../components/DateFilter.vue'
+import Chart from '../components/Chart.vue'
 import '../scss/dashboard.scss'
 
 function formatDate(date) {
