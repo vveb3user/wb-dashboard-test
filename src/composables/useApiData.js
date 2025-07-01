@@ -19,6 +19,7 @@ export function useApiData(endpoint, dateFrom, dateTo, limit = 50, maxPages = 50
       while (currentPage <= maxPages) {
         try {
           progress.value = `Загружается страница ${currentPage}...`
+          
           const response = await axios.get(`http://109.73.206.144:6969/api/${endpoint}`, {
             params: {
               dateFrom: dateFrom.value,
@@ -28,6 +29,7 @@ export function useApiData(endpoint, dateFrom, dateTo, limit = 50, maxPages = 50
               key: 'E6kUTYrYwZq2tN4QEtyzsbEBk3ie'
             }
           })
+          
           const data = response.data.data || response.data
           if (!data.length) break
           fetched = fetched.concat(data)
