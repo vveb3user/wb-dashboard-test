@@ -132,9 +132,3 @@ watch(allStocks, (newStocks) => {
 
 onMounted(fetchAllStocks)
 </script>
-
-<style scoped>
-.stocks-page {
-  padding: 20px;
-}
-</style> 

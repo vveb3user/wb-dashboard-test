@@ -37,7 +37,7 @@ function formatValue(val, key) {
   }
   if (val === true) return 'Да'
   if (val === false) return 'Нет'
-  // Округляем числа до сотых
+
   if (typeof val === 'number') {
     return val.toFixed(2)
   }

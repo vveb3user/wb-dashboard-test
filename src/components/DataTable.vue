@@ -55,7 +55,9 @@ function getRowKey(row, index) {
 }
 
 function formatValue(val, key) {
-  // Округляем числа до сотых
+  if (key === 'date' && typeof val === 'string' && val.includes(' ')) {
+    return val.split(' ')[0]
+  }
   if (typeof val === 'number') {
     return val.toFixed(2)
   }
