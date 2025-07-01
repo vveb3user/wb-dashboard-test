@@ -3,10 +3,10 @@ export const salesTableHeaders = [
   'date',
   'supplier_article',
   'brand',
+  'subject',
   'total_price',
   'discount_percent',
-  'finished_price',
-  'for_pay'
+  'finished_price'
 ]
 
 export const salesTableLabels = {
@@ -14,6 +14,7 @@ export const salesTableLabels = {
   date: 'Дата продажи',
   supplier_article: 'Артикул поставщика',
   brand: 'Бренд',
+  subject: 'Предмет',
   total_price: 'Сумма продажи',
   discount_percent: 'Скидка, %',
   finished_price: 'Итоговая цена',
@@ -36,5 +37,4 @@ export const salesTableLabels = {
   promo_code_discount: 'Скидка по промокоду',
   region_name: 'Регион',
   spp: 'СПП',
-  subject: 'Предмет',
 } 
