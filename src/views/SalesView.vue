@@ -64,6 +64,7 @@ import DataTable from '../components/DataTable.vue'
 import { usePagination } from '../composables/usePagination.js'
 import { useTableFilters } from '../composables/useTableFilters.js'
 import { useApiData } from '../composables/useApiData.js'
+import { salesTableHeaders, salesTableLabels } from '../config/salesTable.js'
 import '../scss/dashboard.scss'
 
 function formatDate(date) {
@@ -75,45 +76,8 @@ oneWeekAgo.setDate(today.getDate() - 7)
 const dateTo = ref(formatDate(today))
 const dateFrom = ref(formatDate(oneWeekAgo))
 const sales = ref([])
-const tableHeaders = [
-  'sale_id',
-  'date',
-  'supplier_article',
-  'brand',
-  'total_price',
-  'discount_percent',
-  'finished_price',
-  'for_pay'
-]
-const tableHeaderLabels = {
-  sale_id: 'ID продажи',
-  date: 'Дата продажи',
-  supplier_article: 'Артикул поставщика',
-  brand: 'Бренд',
-  total_price: 'Сумма продажи',
-  discount_percent: 'Скидка, %',
-  finished_price: 'Итоговая цена',
-  for_pay: 'К выплате',
-  warehouse_name: 'Склад',
-  g_number: 'Номер продажи',
-  last_change_date: 'Дата изменения',
-  tech_size: 'Размер',
-  barcode: 'Штрихкод',
-  category: 'Категория',
-  country_name: 'Страна',
-  income_id: 'ID прихода',
-  is_realization: 'Реализация',
-  is_storno: 'Сторно',
-  is_supply: 'Поставка',
-  nm_id: 'NM ID',
-  oblast_okrug_name: 'Округ',
-  odid: 'ODID',
-  price_with_disc: 'Цена со скидкой',
-  promo_code_discount: 'Скидка по промокоду',
-  region_name: 'Регион',
-  spp: 'СПП',
-  subject: 'Предмет',
-}
+const tableHeaders = salesTableHeaders
+const tableHeaderLabels = salesTableLabels
 const limit = 50
 const popupData = ref(null)
 

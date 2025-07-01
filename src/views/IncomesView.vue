@@ -64,6 +64,7 @@ import DataTable from '../components/DataTable.vue'
 import { usePagination } from '../composables/usePagination.js'
 import { useTableFilters } from '../composables/useTableFilters.js'
 import { useApiData } from '../composables/useApiData.js'
+import { incomesTableHeaders, incomesTableLabels } from '../config/incomesTable.js'
 import '../scss/dashboard.scss'
 
 function formatDate(date) {
@@ -76,23 +77,8 @@ oneWeekAgo.setDate(today.getDate() - 7)
 const dateTo = ref(formatDate(today))
 const dateFrom = ref(formatDate(oneWeekAgo))
 const incomes = ref([])
-const tableHeaders = [
-  'income_id',
-  'date',
-  'supplier_article',
-  'quantity',
-  'total_price',
-  'warehouse_name'
-]
-const tableHeaderLabels = {
-  income_id: 'ID прихода',
-  date: 'Дата прихода',
-  supplier_article: 'Артикул поставщика',
-  quantity: 'Количество',
-  total_price: 'Общая цена',
-  warehouse_name: 'Склад',
-}
-
+const tableHeaders = incomesTableHeaders
+const tableHeaderLabels = incomesTableLabels
 const limit = 50
 const popupData = ref(null)
 
