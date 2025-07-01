@@ -5,7 +5,7 @@ export function useChartData(filteredData, dataKey = 'supplier_article', valueKe
     const counts = {}
     filteredData.value.forEach(row => {
       if (!row[dataKey]) return
-      counts[row[dataKey]] = (counts[row[dataKey]] || 0) + 1
+      counts[row[dataKey]] = (counts[row[dataKey]] || 0) + Number(row[valueKey] || 0)
     })
     const chartArr = Object.entries(counts).map(([key, count]) => ({
       [dataKey]: key,

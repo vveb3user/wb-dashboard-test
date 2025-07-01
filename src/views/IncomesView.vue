@@ -9,12 +9,12 @@
       @load="fetchAllIncomes"
     />
     <div v-if="error" class="table__error">{{ error }}</div>
-    <div v-if="progress">{{ progress }}</div>
+    <div v-if="progress" class="table__progress">{{ progress }}</div>
     <Chart 
       title="Топ-10 по количеству"
       :chartData="chartData"
       :maxQuantity="maxQuantity"
-      dataKey="supplier_article"
+      dataKey="warehouse_name"
       valueKey="quantity"
     />
     <SearchBar 
@@ -65,9 +65,9 @@ import { usePagination } from '../composables/usePagination.js'
 import { useTableFilters } from '../composables/useTableFilters.js'
 import { useApiData } from '../composables/useApiData.js'
 import { useDetailsPopup } from '../composables/useDetailsPopup.js'
-import { useChartData } from '../composables/useChartData.js'
 import { incomesTableHeaders, incomesTableLabels } from '../config/incomesTable.js'
 import { formatDate } from '../utils/dateUtils.js'
+import { useChartData } from '../composables/useChartData.js'
 import '../scss/dashboard.scss'
 
 const today = new Date()
@@ -116,7 +116,7 @@ const filteredIncomes = computed(() => {
   return filterData(allIncomes.value)
 })
 
-const { chartData, maxQuantity } = useChartData(filteredIncomes)
+const { chartData, maxQuantity } = useChartData(filteredIncomes, 'warehouse_name', 'quantity')
 
 const fetchAllIncomes = () => {
   fetchAllData(updatePageIncomes, resetPage, hasMore)

@@ -9,13 +9,13 @@
       @load="fetchAllOrders"
     />
     <div v-if="error" class="table__error">{{ error }}</div>
-    <div v-if="progress">{{ progress }}</div>
+    <div v-if="progress" class="table__progress">{{ progress }}</div>
     <Chart 
-      title="Топ-10 по количеству"
+      title="Топ-10 складов по сумме заказов"
       :chartData="chartData"
       :maxQuantity="maxQuantity"
-      dataKey="supplier_article"
-      valueKey="quantity"
+      dataKey="warehouse_name"
+      valueKey="total_price"
     />
     <SearchBar 
       v-model="searchQuery"
@@ -116,7 +116,7 @@ const filteredOrders = computed(() => {
   return filterData(allOrders.value)
 })
 
-const { chartData, maxQuantity } = useChartData(filteredOrders)
+const { chartData, maxQuantity } = useChartData(filteredOrders, 'warehouse_name', 'total_price')
 
 const fetchAllOrders = () => {
   fetchAllData(updatePageOrders, resetPage, hasMore)

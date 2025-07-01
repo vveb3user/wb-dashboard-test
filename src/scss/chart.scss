@@ -5,6 +5,11 @@
 .chart {
   margin-top: rem-calc(30);
   margin-bottom: rem-calc(40);
+  background: var(--color-background);
+  border-radius: rem-calc(12);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+  width: 100%;
+  padding: rem-calc(24) rem-calc(24) rem-calc(10) rem-calc(24);
   
   h2 {
     margin-bottom: rem-calc(20);
@@ -17,21 +22,23 @@
     display: flex;
     justify-content: center;
     align-items: flex-end;
-    gap: rem-calc(20);
+    gap: 0;
     margin: 0 auto;
-    max-width: rem-calc(1200);
+    max-width: 100%;
     position: relative;
-    padding-bottom: rem-calc(40);
-    min-height: rem-calc(440);
+    padding-bottom: rem-calc(10);
+    min-height: rem-calc(260);
+    width: 100%;
   }
 
   &__bars {
     display: flex;
     align-items: flex-end;
-    gap: rem-calc(8);
-    height: rem-calc(400);
+    gap: rem-calc(12);
+    height: rem-calc(220);
     position: relative;
-    
+    width: 100%;
+    flex: 1;
     &::before {
       content: '';
       position: absolute;
@@ -49,11 +56,24 @@
     flex-direction: column;
     align-items: center;
     min-width: rem-calc(60);
-    position: relative;
+    max-width: rem-calc(100);
+    flex: 1;
+    width: 100%;
+  }
+
+  &__bar-value-top {
+    font-size: rem-calc(14);
+    font-weight: bold;
+    color: $color-accent;
+    margin-bottom: rem-calc(2);
+    text-align: center;
+    line-height: 1;
   }
 
   &__bar {
-    width: rem-calc(40);
+    width: 70%;
+    min-width: rem-calc(32);
+    max-width: rem-calc(60);
     background: linear-gradient(to top, $color-accent, color.adjust($color-accent, $lightness: 20%));
     display: block;
     transition: all 0.3s ease;
@@ -67,6 +87,11 @@
       background: linear-gradient(to top, color.adjust($color-accent, $lightness: -10%), $color-accent);
       transform: scale(1.05);
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    &:hover .chart__tooltip {
+      display: block;
+      opacity: 1;
     }
   }
 
@@ -82,19 +107,23 @@
   }
 
   &__bar-title {
-    font-size: rem-calc(9);
+    font-size: rem-calc(16);
     color: $color-text;
     margin-bottom: rem-calc(2);
     line-height: 1.2;
-    max-width: rem-calc(60);
+    max-width: rem-calc(100);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: normal;
     word-break: break-all;
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    font-weight: bold;
   }
 
   &__bar-value {
-    font-size: rem-calc(12);
+    font-size: rem-calc(14);
     font-weight: bold;
     color: $color-accent;
   }
@@ -103,8 +132,10 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: rem-calc(400);
-    margin-right: rem-calc(10);
+    height: rem-calc(220);
+    width: rem-calc(60);
+    min-width: rem-calc(60);
+    max-width: rem-calc(60);
     position: relative;
     
     &::after {
@@ -119,11 +150,12 @@
   }
 
   &__y-label {
-    font-size: rem-calc(12);
-    color: $color-text;
+    font-size: rem-calc(18);
+    color: $color-accent;
     text-align: right;
     padding-right: rem-calc(8);
     position: relative;
+    font-weight: bold;
     
     &::after {
       content: '';
@@ -141,5 +173,84 @@
     color: #222;
     border-radius: 2px;
     padding: 0 2px;
+  }
+
+  &__x-axis {
+    display: grid;
+    grid-template-columns: repeat(var(--chart-columns, 10), 1fr);
+    align-items: start;
+    margin-top: rem-calc(8);
+    width: 100%;
+    gap: 0;
+    min-height: rem-calc(24);
+  }
+
+  &__x-label {
+    font-size: rem-calc(12);
+    color: $color-accent;
+    font-weight: 600;
+    text-align: center;
+    max-width: rem-calc(100);
+    min-width: rem-calc(60);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+    margin: 0 auto;
+    line-height: 1.1;
+    height: rem-calc(20);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  &__bars-labels {
+    display: grid;
+    grid-template-columns: repeat(var(--chart-columns, 10), 1fr);
+    align-items: end;
+    width: 100%;
+    gap: 0;
+  }
+
+  &__bar-label-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: rem-calc(80);
+    max-width: rem-calc(120);
+    width: 100%;
+  }
+
+  &__tooltip {
+    display: none;
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    transform: translateX(-50%) translateY(-8px);
+    background: $color-background;
+    color: $color-accent;
+    border-radius: rem-calc(6);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    padding: rem-calc(8) rem-calc(12);
+    font-size: rem-calc(13);
+    font-weight: 500;
+    white-space: nowrap;
+    z-index: 10;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  &__tooltip-title {
+    font-size: rem-calc(13);
+    font-weight: 600;
+    margin-bottom: rem-calc(2);
+    color: $color-accent;
+  }
+
+  &__tooltip-value {
+    font-size: rem-calc(12);
+    color: $color-accent;
   }
 } 
