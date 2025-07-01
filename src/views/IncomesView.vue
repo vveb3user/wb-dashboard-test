@@ -63,6 +63,7 @@ import Pagination from '../components/Pagination.vue'
 import DetailsPopup from '../components/DetailsPopup.vue'
 import DataTable from '../components/DataTable.vue'
 import { usePagination } from '../composables/usePagination.js'
+import { useTableFilters } from '../composables/useTableFilters.js'
 import '../scss/dashboard.scss'
 
 function formatDate(date) {
@@ -77,10 +78,6 @@ const dateFrom = ref(formatDate(twoWeeksAgo))
 const incomes = ref([])
 const loading = ref(false)
 const error = ref('')
-const searchQuery = ref('')
-const activeSearchQuery = ref('')
-const columnFilters = ref({})
-
 const tableHeaders = [
   'income_id',
   'date',
@@ -97,9 +94,6 @@ const tableHeaderLabels = {
   total_price: 'Общая цена',
   warehouse_name: 'Склад',
 }
-tableHeaders.forEach(header => {
-  columnFilters.value[header] = ''
-})
 
 const allIncomes = ref([])
 const progress = ref('')
@@ -107,27 +101,26 @@ const limit = 50
 const maxPages = 50
 const popupData = ref(null)
 
-const { page, hasMore, nextPage, prevPage, updatePage, resetPage } = usePagination(limit)
+const { 
+  page, 
+  hasMore, 
+  nextPage, 
+  prevPage, 
+  updatePage, 
+  resetPage 
+} = usePagination(limit)
+
+const { 
+  searchQuery, 
+  activeSearchQuery, 
+  columnFilters, 
+  applySearch, 
+  updateColumnFilter, 
+  filterData 
+} = useTableFilters(tableHeaders, resetPage, updatePageIncomes)
 
 const filteredIncomes = computed(() => {
-  let filtered = allIncomes.value
-  if (activeSearchQuery.value) {
-    const query = activeSearchQuery.value.toLowerCase()
-    filtered = filtered.filter(row =>
-      tableHeaders.some(key =>
-        row[key] !== undefined && row[key] !== null && String(row[key]).toLowerCase().includes(query)
-      )
-    )
-  }
-  Object.keys(columnFilters.value).forEach(column => {
-    if (columnFilters.value[column]) {
-      const filterValue = columnFilters.value[column].toLowerCase()
-      filtered = filtered.filter(row =>
-        String(row[column]).toLowerCase().includes(filterValue)
-      )
-    }
-  })
-  return filtered
+  return filterData(allIncomes.value)
 })
 
 const maxQuantity = computed(() => {
@@ -206,27 +199,9 @@ function updatePageIncomes() {
   updatePage(filteredIncomes, incomes, limit)
 }
 
-function applySearch() {
-  activeSearchQuery.value = searchQuery.value
-  resetPage()
-  updatePageIncomes()
-}
-
-function updateColumnFilter(header, value) {
-  columnFilters.value[header] = value
-}
-
-watch([activeSearchQuery, () => Object.values(columnFilters.value).join(), page], () => {
+watch(page, () => {
   updatePageIncomes()
 })
-
-watch(
-  () => Object.values(columnFilters.value).join(),
-  () => {
-    resetPage()
-    updatePageIncomes()
-  }
-)
 
 function showDetails(row) {
   popupData.value = row

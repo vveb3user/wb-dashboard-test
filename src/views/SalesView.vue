@@ -63,6 +63,7 @@ import Pagination from '../components/Pagination.vue'
 import DetailsPopup from '../components/DetailsPopup.vue'
 import DataTable from '../components/DataTable.vue'
 import { usePagination } from '../composables/usePagination.js'
+import { useTableFilters } from '../composables/useTableFilters.js'
 import '../scss/dashboard.scss'
 
 function formatDate(date) {
@@ -76,9 +77,6 @@ const dateFrom = ref(formatDate(twoWeeksAgo))
 const sales = ref([])
 const loading = ref(false)
 const error = ref('')
-const searchQuery = ref('')
-const activeSearchQuery = ref('')
-const columnFilters = ref({})
 const tableHeaders = [
   'sale_id',
   'date',
@@ -118,36 +116,32 @@ const tableHeaderLabels = {
   spp: 'СПП',
   subject: 'Предмет',
 }
-tableHeaders.forEach(header => {
-  columnFilters.value[header] = ''
-})
 const allSales = ref([])
 const progress = ref('')
 const limit = 50
 const maxPages = 50
 const popupData = ref(null)
 
-const { page, hasMore, nextPage, prevPage, updatePage, resetPage } = usePagination(limit)
+const { 
+  page, 
+  hasMore, 
+  nextPage, 
+  prevPage, 
+  updatePage, 
+  resetPage 
+} = usePagination(limit)
+
+const { 
+  searchQuery, 
+  activeSearchQuery, 
+  columnFilters, 
+  applySearch, 
+  updateColumnFilter, 
+  filterData 
+} = useTableFilters(tableHeaders, resetPage, updatePageSales)
 
 const filteredSales = computed(() => {
-  let filtered = allSales.value
-  if (activeSearchQuery.value) {
-    const query = activeSearchQuery.value.toLowerCase()
-    filtered = filtered.filter(row =>
-      tableHeaders.some(key =>
-        row[key] !== undefined && row[key] !== null && String(row[key]).toLowerCase().includes(query)
-      )
-    )
-  }
-  Object.keys(columnFilters.value).forEach(column => {
-    if (columnFilters.value[column]) {
-      const filterValue = columnFilters.value[column].toLowerCase()
-      filtered = filtered.filter(row =>
-        String(row[column]).toLowerCase().includes(filterValue)
-      )
-    }
-  })
-  return filtered
+  return filterData(allSales.value)
 })
 
 const maxQuantity = computed(() => {
@@ -226,27 +220,9 @@ function updatePageSales() {
   updatePage(filteredSales, sales, limit)
 }
 
-function applySearch() {
-  activeSearchQuery.value = searchQuery.value
-  resetPage()
-  updatePageSales()
-}
-
-function updateColumnFilter(header, value) {
-  columnFilters.value[header] = value
-}
-
-watch([activeSearchQuery, () => Object.values(columnFilters.value).join(), page], () => {
+watch(page, () => {
   updatePageSales()
 })
-
-watch(
-  () => Object.values(columnFilters.value).join(),
-  () => {
-    resetPage()
-    updatePageSales()
-  }
-)
 
 function showDetails(row) {
   popupData.value = row
