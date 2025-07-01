@@ -1,29 +1,132 @@
-# wb-dashboard-test
+# WB Dashboard Test
 
-This template should help get you started developing with Vue 3 in Vite.
+Веб-приложение для отображения аналитических данных с использованием Vue 3 и Vite.
 
-## Recommended IDE Setup
+## Описание
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+Дашборд для работы с API данных, включающий четыре основных раздела:
+- **Incomes** - данные о доходах
+- **Orders** - данные о заказах  
+- **Sales** - данные о продажах
+- **Stocks** - данные о запасах
 
-## Customize configuration
+## Технологии
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+- **Vue 3** - фреймворк для создания пользовательского интерфейса
+- **Vite** - инструмент сборки и разработки
+- **Vue Router** - маршрутизация
+- **Chart.js** - библиотека для создания графиков
+- **Axios** - HTTP клиент для API запросов
+- **SCSS** - препроцессор CSS
 
-## Project Setup
+## Требования
 
-```sh
+- Node.js версии 16 или выше
+- npm или yarn
+
+## Установка и запуск
+
+### Локальная разработка
+
+1. Клонируйте репозиторий:
+```bash
+git clone <repository-url>
+cd wb-dashboard-test
+```
+
+2. Установите зависимости:
+```bash
 npm install
 ```
 
-### Compile and Hot-Reload for Development
-
-```sh
+3. Запустите сервер разработки:
+```bash
 npm run dev
 ```
 
-### Compile and Minify for Production
+Приложение будет доступно по адресу: `http://localhost:5173`
 
-```sh
+### Сборка для продакшена
+
+1. Создайте оптимизированную сборку:
+```bash
 npm run build
 ```
+
+2. Для предварительного просмотра сборки:
+```bash
+npm run preview
+```
+
+## Структура проекта
+
+```
+src/
+├── components/          # Vue компоненты
+│   ├── Chart.vue       # Компонент для графиков
+│   ├── DataTable.vue   # Таблица данных
+│   ├── DateFilter.vue  # Фильтр по датам
+│   └── ...
+├── composables/        # Композаблы Vue 3
+│   ├── useApiData.js   # Логика работы с API
+│   ├── usePagination.js # Логика пагинации
+│   └── ...
+├── views/              # Страницы приложения
+│   ├── IncomesView.vue
+│   ├── OrdersView.vue
+│   ├── SalesView.vue
+│   └── StocksView.vue
+├── router/             # Конфигурация маршрутизации
+├── scss/               # Стили SCSS
+├── utils/              # Утилиты
+└── config/             # Конфигурационные файлы
+```
+
+## API
+
+Приложение использует внешний API:
+- **Base URL**: `http://109.73.206.144:6969/api/`
+- **Endpoints**: `incomes`, `orders`, `sales`, `stocks`
+- **API Key**: `E6kUTYrYwZq2tN4QEtyzsbEBk3ie`
+
+## Развертывание
+
+### Netlify (рекомендуется)
+
+1. Создайте аккаунт на [Netlify](https://netlify.com)
+2. Подключите ваш GitHub репозиторий
+3. Настройте сборку:
+   - **Build command**: `npm run build`
+   - **Publish directory**: `dist`
+4. Нажмите "Deploy site"
+
+### Vercel
+
+1. Создайте аккаунт на [Vercel](https://vercel.com)
+2. Импортируйте ваш репозиторий
+3. Vercel автоматически определит настройки Vue/Vite
+4. Нажмите "Deploy"
+
+### GitHub Pages
+
+1. Добавьте в `vite.config.js`:
+```javascript
+export default defineConfig({
+  base: '/<repository-name>/',
+  // ... остальные настройки
+})
+```
+
+2. Создайте GitHub Action для автоматического деплоя
+
+## Особенности
+
+- **Пагинация**: Поддержка постраничной загрузки данных
+- **Фильтрация**: Поиск и фильтры по колонкам
+- **Графики**: Визуализация данных с помощью Chart.js
+- **Адаптивность**: Поддержка мобильных устройств
+- **Ленивая загрузка**: Компоненты загружаются по требованию
+
+## Лицензия
+
+MIT
