@@ -27,7 +27,7 @@
     }
     display: flex;
     justify-content: center;
-    margin-bottom: 10px;
+    margin-bottom: rem-calc(10);
   }
   &__error {
     color: $color-error;

@@ -1,17 +1,19 @@
 <template>
-  <div class="search">
+  <div class="search search--row">
     <input 
       type="text" 
       :value="modelValue" 
       @input="$emit('update:modelValue', $event.target.value)"
-      placeholder="Search in table..." 
+      @keydown.enter="$emit('search')"
+      placeholder="Поиск по таблице..." 
       class="search__input"
     />
-    <button @click="$emit('search')" class="search__button">Найти</button>
+    <BaseButton @click="$emit('search')">Найти</BaseButton>
   </div>
 </template>
 
 <script setup>
+import BaseButton from './BaseButton.vue'
 defineProps({
   modelValue: String
 })

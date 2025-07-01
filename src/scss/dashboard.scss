@@ -6,4 +6,12 @@
   padding: rem-calc(20);
   max-width: rem-calc(1200);
   margin: 0 auto;
+
+  h1 {
+    text-align: center;
+    margin-bottom: rem-calc(30);
+    color: $color-accent;
+    font-size: rem-calc(32);
+    font-weight: bold;
+  }
 } 

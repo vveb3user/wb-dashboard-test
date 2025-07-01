@@ -6,14 +6,14 @@ nav {
   width: 100%;
   display: flex;
   justify-content: center;
-  margin: 0 0 30px 0;
-  padding: 20px 0 10px 0;
+  margin: 0 0 rem-calc(30) 0;
+  padding: rem-calc(20) 0 rem-calc(10) 0;
   background: transparent;
   position: relative;
   z-index: 10;
   a {
-    margin: 0 10px;
-    color: #42b983;
+    margin: 0 rem-calc(10);
+    color: $color-accent;
     text-decoration: none;
     &.router-link-exact-active {
       font-weight: bold;
