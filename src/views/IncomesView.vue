@@ -1,17 +1,13 @@
 <template>
   <div class="dashboard">
     <h1>Incomes Dashboard</h1>
-    <div class="dashboard__filters">
-      <label>
-        Date from:
-        <input type="date" v-model="dateFrom" />
-      </label>
-      <label>
-        Date to:
-        <input type="date" v-model="dateTo" />
-      </label>
-      <button @click="fetchAllIncomes">Load</button>
-    </div>
+    <DateFilter
+      :dateFrom="dateFrom"
+      :dateTo="dateTo"
+      @update:dateFrom="val => dateFrom = val"
+      @update:dateTo="val => dateTo = val"
+      @load="fetchAllIncomes"
+    />
     <div class="chart">
       <h2>Chart by Quantity (Top 10)</h2>
       <div class="chart__container">
@@ -87,6 +83,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import axios from 'axios'
+import DateFilter from '../components/DateFilter.vue'
 import '../scss/dashboard.scss'
 
 // Format date as YYYY-MM-DD
@@ -94,10 +91,10 @@ function formatDate(date) {
   return date.toISOString().slice(0, 10)
 }
 const today = new Date()
-const monthAgo = new Date()
-monthAgo.setMonth(today.getMonth() - 1)
+const twoWeeksAgo = new Date()
+twoWeeksAgo.setDate(today.getDate() - 14)
 const dateTo = ref(formatDate(today))
-const dateFrom = ref(formatDate(monthAgo))
+const dateFrom = ref(formatDate(twoWeeksAgo))
 const incomes = ref([])
 const loading = ref(false)
 const error = ref('')

@@ -7,6 +7,7 @@
 @use './nav.scss' as *;
 @use './dashboard.scss' as *;
 @use './popup.scss' as *;
+@use './date-filter.scss' as *;
 
 .main-container {
   max-width: 1200px;
