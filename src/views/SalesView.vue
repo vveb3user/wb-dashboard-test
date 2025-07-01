@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard wide-table">
+  <div class="dashboard">
     <h1>Sales Dashboard</h1>
     <DateFilter
       :dateFrom="dateFrom"
@@ -11,7 +11,7 @@
     <div v-if="error" class="table__error">{{ error }}</div>
     <div v-if="progress">{{ progress }}</div>
     <Chart 
-      title="Chart by Sales Count (Top 10)"
+      title="Chart by Quantity (Top 10)"
       :chartData="chartData"
       :maxQuantity="maxQuantity"
       dataKey="supplier_article"
@@ -30,8 +30,8 @@
     <Pagination
       :currentPage="page"
       :hasMore="hasMore"
-      @prev="prevPage"
-      @next="nextPage"
+      @prev="() => prevPage(updatePageSales)"
+      @next="() => nextPage(updatePageSales)"
     />
     <DataTable
       :data="sales"
@@ -62,6 +62,7 @@ import ColumnFilters from '../components/ColumnFilters.vue'
 import Pagination from '../components/Pagination.vue'
 import DetailsPopup from '../components/DetailsPopup.vue'
 import DataTable from '../components/DataTable.vue'
+import { usePagination } from '../composables/usePagination.js'
 import '../scss/dashboard.scss'
 
 function formatDate(date) {
@@ -75,7 +76,6 @@ const dateFrom = ref(formatDate(twoWeeksAgo))
 const sales = ref([])
 const loading = ref(false)
 const error = ref('')
-const page = ref(1)
 const searchQuery = ref('')
 const activeSearchQuery = ref('')
 const columnFilters = ref({})
@@ -99,7 +99,6 @@ const tableHeaderLabels = {
   finished_price: 'Итоговая цена',
   for_pay: 'К выплате',
   warehouse_name: 'Склад',
-  // остальные для попапа:
   g_number: 'Номер продажи',
   last_change_date: 'Дата изменения',
   tech_size: 'Размер',
@@ -122,12 +121,13 @@ const tableHeaderLabels = {
 tableHeaders.forEach(header => {
   columnFilters.value[header] = ''
 })
-const hasMore = ref(false)
 const allSales = ref([])
 const progress = ref('')
 const limit = 50
 const maxPages = 50
 const popupData = ref(null)
+
+const { page, hasMore, nextPage, prevPage, updatePage, resetPage } = usePagination(limit)
 
 const filteredSales = computed(() => {
   let filtered = allSales.value
@@ -207,7 +207,7 @@ const fetchAllSales = async () => {
       error.value = 'Достигнут лимит по страницам (' + maxPages + '). Уточните период.'
     }
     allSales.value = fetched
-    page.value = 1
+    resetPage()
     progress.value = ''
     updatePageSales()
     hasMore.value = allSales.value.length > limit
@@ -223,26 +223,12 @@ const fetchAllSales = async () => {
 }
 
 function updatePageSales() {
-  const start = (page.value - 1) * limit
-  const end = start + limit
-  sales.value = filteredSales.value.slice(start, end)
-  hasMore.value = end < filteredSales.value.length
-}
-
-const nextPage = () => {
-  page.value++
-  updatePageSales()
-}
-const prevPage = () => {
-  if (page.value > 1) {
-    page.value--
-    updatePageSales()
-  }
+  updatePage(filteredSales, sales, limit)
 }
 
 function applySearch() {
   activeSearchQuery.value = searchQuery.value
-  page.value = 1
+  resetPage()
   updatePageSales()
 }
 
@@ -257,7 +243,7 @@ watch([activeSearchQuery, () => Object.values(columnFilters.value).join(), page]
 watch(
   () => Object.values(columnFilters.value).join(),
   () => {
-    page.value = 1
+    resetPage()
     updatePageSales()
   }
 )
@@ -270,11 +256,4 @@ function closePopup() {
 }
 
 onMounted(fetchAllSales)
-</script>
-
-<style>
-.wide-table {
-  max-width: 1200px;
-}
-
-</style> 
+</script> 

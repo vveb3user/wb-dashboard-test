@@ -50,8 +50,9 @@ const props = defineProps({
 defineEmits(['showDetails'])
 
 function getRowKey(row, index) {
-  // Используем ID записи или индекс как ключ
-  return row.id || row.sale_id || row.order_id || row.income_id || index
+  // Используем ID записи + индекс для уникальности
+  const id = row.id || row.sale_id || row.order_id || row.income_id || row.g_number
+  return id ? `${id}-${index}` : index
 }
 
 function formatValue(val, key) {

@@ -30,8 +30,8 @@
     <Pagination
       :currentPage="page"
       :hasMore="hasMore"
-      @prev="prevPage"
-      @next="nextPage"
+      @prev="() => prevPage(updatePageOrders)"
+      @next="() => nextPage(updatePageOrders)"
     />
     <DataTable
       :data="orders"
@@ -62,11 +62,13 @@ import ColumnFilters from '../components/ColumnFilters.vue'
 import Pagination from '../components/Pagination.vue'
 import DetailsPopup from '../components/DetailsPopup.vue'
 import DataTable from '../components/DataTable.vue'
+import { usePagination } from '../composables/usePagination.js'
 import '../scss/dashboard.scss'
 
 function formatDate(date) {
   return date.toISOString().slice(0, 10)
 }
+
 const today = new Date()
 const twoWeeksAgo = new Date()
 twoWeeksAgo.setDate(today.getDate() - 14)
@@ -75,10 +77,10 @@ const dateFrom = ref(formatDate(twoWeeksAgo))
 const orders = ref([])
 const loading = ref(false)
 const error = ref('')
-const page = ref(1)
 const searchQuery = ref('')
 const activeSearchQuery = ref('')
 const columnFilters = ref({})
+
 const tableHeaders = [
   'g_number',
   'date',
@@ -86,7 +88,6 @@ const tableHeaders = [
   'supplier_article',
   'tech_size'
 ]
-
 const tableHeaderLabels = {
   g_number: 'Номер заказа',
   date: 'Дата заказа',
@@ -94,15 +95,17 @@ const tableHeaderLabels = {
   supplier_article: 'Артикул поставщика',
   tech_size: 'Размер',
 }
-
 tableHeaders.forEach(header => {
   columnFilters.value[header] = ''
 })
 
-const hasMore = ref(false)
 const allOrders = ref([])
 const progress = ref('')
+const limit = 50
+const maxPages = 50
 const popupData = ref(null)
+
+const { page, hasMore, nextPage, prevPage, updatePage, resetPage } = usePagination(limit)
 
 const filteredOrders = computed(() => {
   let filtered = allOrders.value
@@ -131,19 +134,17 @@ const maxQuantity = computed(() => {
 })
 
 const chartData = computed(() => {
-  const counts = {};
+  const counts = {}
   filteredOrders.value.forEach(row => {
-    if (!row.supplier_article) return;
-    counts[row.supplier_article] = (counts[row.supplier_article] || 0) + 1;
-  });
+    if (!row.supplier_article) return
+    counts[row.supplier_article] = (counts[row.supplier_article] || 0) + 1
+  })
   const chartArr = Object.entries(counts).map(([supplier_article, count]) => ({
     supplier_article,
     quantity: count
-  }));
-  return chartArr.sort((a, b) => b.quantity - a.quantity).slice(0, 10);
+  }))
+  return chartArr.sort((a, b) => b.quantity - a.quantity).slice(0, 10)
 })
-
-const limit = 50
 
 const fetchAllOrders = async () => {
   loading.value = true
@@ -152,7 +153,6 @@ const fetchAllOrders = async () => {
   progress.value = ''
   let currentPage = 1
   let fetched = []
-  const maxPages = 50
   try {
     while (currentPage <= maxPages) {
       try {
@@ -185,7 +185,7 @@ const fetchAllOrders = async () => {
       error.value = 'Достигнут лимит по страницам (' + maxPages + '). Уточните период.'
     }
     allOrders.value = fetched
-    page.value = 1
+    resetPage()
     progress.value = ''
     updatePageOrders()
     hasMore.value = allOrders.value.length > limit
@@ -201,39 +201,17 @@ const fetchAllOrders = async () => {
 }
 
 function updatePageOrders() {
-  const start = (page.value - 1) * limit
-  const end = start + limit
-  orders.value = filteredOrders.value.slice(start, end)
-  hasMore.value = end < filteredOrders.value.length
-}
-
-const nextPage = () => {
-  page.value++
-  updatePageOrders()
-}
-const prevPage = () => {
-  if (page.value > 1) {
-    page.value--
-    updatePageOrders()
-  }
+  updatePage(filteredOrders, orders, limit)
 }
 
 function applySearch() {
   activeSearchQuery.value = searchQuery.value
-  page.value = 1
+  resetPage()
   updatePageOrders()
 }
 
 function updateColumnFilter(header, value) {
   columnFilters.value[header] = value
-}
-
-function showDetails(row) {
-  popupData.value = row
-}
-
-function closePopup() {
-  popupData.value = null
 }
 
 watch([activeSearchQuery, () => Object.values(columnFilters.value).join(), page], () => {
@@ -243,12 +221,17 @@ watch([activeSearchQuery, () => Object.values(columnFilters.value).join(), page]
 watch(
   () => Object.values(columnFilters.value).join(),
   () => {
-    page.value = 1;
-    updatePageOrders();
+    resetPage()
+    updatePageOrders()
   }
-);
+)
 
-
+function showDetails(row) {
+  popupData.value = row
+}
+function closePopup() {
+  popupData.value = null
+}
 
 onMounted(fetchAllOrders)
 </script>

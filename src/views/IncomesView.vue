@@ -9,7 +9,6 @@
       @load="fetchAllIncomes"
     />
     <div v-if="error" class="table__error">{{ error }}</div>
-    <div v-if="loading">Loading...</div>
     <div v-if="progress">{{ progress }}</div>
     <Chart 
       title="Chart by Quantity (Top 10)"
@@ -31,8 +30,8 @@
     <Pagination
       :currentPage="page"
       :hasMore="hasMore"
-      @prev="prevPage"
-      @next="nextPage"
+      @prev="() => prevPage(updatePageIncomes)"
+      @next="() => nextPage(updatePageIncomes)"
     />
     <DataTable
       :data="incomes"
@@ -63,12 +62,13 @@ import ColumnFilters from '../components/ColumnFilters.vue'
 import Pagination from '../components/Pagination.vue'
 import DetailsPopup from '../components/DetailsPopup.vue'
 import DataTable from '../components/DataTable.vue'
+import { usePagination } from '../composables/usePagination.js'
 import '../scss/dashboard.scss'
 
-// Format date as YYYY-MM-DD
 function formatDate(date) {
   return date.toISOString().slice(0, 10)
 }
+
 const today = new Date()
 const twoWeeksAgo = new Date()
 twoWeeksAgo.setDate(today.getDate() - 14)
@@ -77,10 +77,10 @@ const dateFrom = ref(formatDate(twoWeeksAgo))
 const incomes = ref([])
 const loading = ref(false)
 const error = ref('')
-const page = ref(1)
 const searchQuery = ref('')
 const activeSearchQuery = ref('')
 const columnFilters = ref({})
+
 const tableHeaders = [
   'income_id',
   'date',
@@ -89,7 +89,6 @@ const tableHeaders = [
   'total_price',
   'warehouse_name'
 ]
-
 const tableHeaderLabels = {
   income_id: 'ID прихода',
   date: 'Дата прихода',
@@ -98,18 +97,18 @@ const tableHeaderLabels = {
   total_price: 'Общая цена',
   warehouse_name: 'Склад',
 }
-
-// Инициализируем фильтры для всех колонок
 tableHeaders.forEach(header => {
   columnFilters.value[header] = ''
 })
 
-const hasMore = ref(false)
 const allIncomes = ref([])
 const progress = ref('')
+const limit = 50
+const maxPages = 50
 const popupData = ref(null)
 
-// Фильтрация данных
+const { page, hasMore, nextPage, prevPage, updatePage, resetPage } = usePagination(limit)
+
 const filteredIncomes = computed(() => {
   let filtered = allIncomes.value
   if (activeSearchQuery.value) {
@@ -136,15 +135,18 @@ const maxQuantity = computed(() => {
   return chart.length ? Math.max(...chart.map(r => Number(r.quantity) || 0)) : 1
 })
 
-// Данные для графика - всегда топ 10 по количеству
 const chartData = computed(() => {
-  const filtered = filteredIncomes.value
-  return filtered
-    .sort((a, b) => Number(b.quantity) - Number(a.quantity))
-    .slice(0, 10)
+  const counts = {}
+  filteredIncomes.value.forEach(row => {
+    if (!row.supplier_article) return
+    counts[row.supplier_article] = (counts[row.supplier_article] || 0) + 1
+  })
+  const chartArr = Object.entries(counts).map(([supplier_article, count]) => ({
+    supplier_article,
+    quantity: count
+  }))
+  return chartArr.sort((a, b) => b.quantity - a.quantity).slice(0, 10)
 })
-
-const limit = 50
 
 const fetchAllIncomes = async () => {
   loading.value = true
@@ -153,7 +155,6 @@ const fetchAllIncomes = async () => {
   progress.value = ''
   let currentPage = 1
   let fetched = []
-  const maxPages = 50 // ограничение на 50 страниц
   try {
     while (currentPage <= maxPages) {
       try {
@@ -172,7 +173,7 @@ const fetchAllIncomes = async () => {
         fetched = fetched.concat(data)
         if (data.length < limit) break
         currentPage++
-        await new Promise(res => setTimeout(res, 62)) // задержка между запросами 0.0625 сек
+        await new Promise(res => setTimeout(res, 300))
       } catch (err) {
         if (err.response && err.response.status === 429) {
           error.value = 'Слишком много запросов к API. Попробуйте уменьшить диапазон дат или повторите попытку позже.'
@@ -186,7 +187,7 @@ const fetchAllIncomes = async () => {
       error.value = 'Достигнут лимит по страницам (' + maxPages + '). Уточните период.'
     }
     allIncomes.value = fetched
-    page.value = 1
+    resetPage()
     progress.value = ''
     updatePageIncomes()
     hasMore.value = allIncomes.value.length > limit
@@ -202,26 +203,12 @@ const fetchAllIncomes = async () => {
 }
 
 function updatePageIncomes() {
-  const start = (page.value - 1) * limit
-  const end = start + limit
-  incomes.value = filteredIncomes.value.slice(start, end)
-  hasMore.value = end < filteredIncomes.value.length
-}
-
-const nextPage = () => {
-  page.value++
-  updatePageIncomes()
-}
-const prevPage = () => {
-  if (page.value > 1) {
-    page.value--
-    updatePageIncomes()
-  }
+  updatePage(filteredIncomes, incomes, limit)
 }
 
 function applySearch() {
   activeSearchQuery.value = searchQuery.value
-  page.value = 1
+  resetPage()
   updatePageIncomes()
 }
 
@@ -229,15 +216,6 @@ function updateColumnFilter(header, value) {
   columnFilters.value[header] = value
 }
 
-function showDetails(row) {
-  popupData.value = row
-}
-
-function closePopup() {
-  popupData.value = null
-}
-
-// Следим за изменением фильтров, поиска и страницы
 watch([activeSearchQuery, () => Object.values(columnFilters.value).join(), page], () => {
   updatePageIncomes()
 })
@@ -245,12 +223,17 @@ watch([activeSearchQuery, () => Object.values(columnFilters.value).join(), page]
 watch(
   () => Object.values(columnFilters.value).join(),
   () => {
-    page.value = 1;
-    updatePageIncomes();
+    resetPage()
+    updatePageIncomes()
   }
-);
+)
 
-
+function showDetails(row) {
+  popupData.value = row
+}
+function closePopup() {
+  popupData.value = null
+}
 
 onMounted(fetchAllIncomes)
 </script>
