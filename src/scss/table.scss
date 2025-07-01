@@ -10,17 +10,14 @@
     border: 1px solid $color-border;
     padding: rem-calc(4) rem-calc(8);
     text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   th {
     background: $color-bg-header;
     color: $color-accent;
   }
-  th.income_id, td.income_id { width: 110px; }
-  th.date, td.date { width: 110px; }
-  th.supplier_article, td.supplier_article { width: 180px; }
-  th.quantity, td.quantity { width: 90px; }
-  th.total_price, td.total_price { width: 110px; }
-  th.warehouse_name, td.warehouse_name { width: 150px; }
   
   &__pagination {
     margin: rem-calc(10) 0;

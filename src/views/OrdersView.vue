@@ -52,16 +52,15 @@
     </div>
     <div class="search__filters">
       <div v-for="header in tableHeaders" :key="header" class="search__filter-group">
-        <label>{{ header }}:</label>
+        <label>{{ tableHeaderLabels[header] }}:</label>
         <input 
           type="text" 
           v-model="columnFilters[header]" 
-          :placeholder="`Filter ${header}...`"
+          :placeholder="`Фильтр по ${tableHeaderLabels[header]}...`"
         />
       </div>
     </div>
     <div v-if="error" class="table__error">{{ error }}</div>
-    <div v-if="loading">Loading...</div>
     <div v-if="progress">{{ progress }}</div>
     <div class="table__pagination">
       <button @click="prevPage" :disabled="page === 1">Prev</button>
@@ -71,7 +70,7 @@
     <table v-if="!loading && orders.length" class="table">
       <thead>
         <tr>
-          <th v-for="key in tableHeaders" :key="key" :class="key">{{ key }}</th>
+          <th v-for="key in tableHeaders" :key="key" :class="key">{{ tableHeaderLabels[key] }}</th>
         </tr>
       </thead>
       <tbody>
@@ -111,6 +110,14 @@ const tableHeaders = [
   'supplier_article',
   'tech_size'
 ]
+
+const tableHeaderLabels = {
+  g_number: 'Номер заказа',
+  date: 'Дата заказа',
+  last_change_date: 'Дата изменения',
+  supplier_article: 'Артикул поставщика',
+  tech_size: 'Размер',
+}
 
 tableHeaders.forEach(header => {
   columnFilters.value[header] = ''
@@ -182,13 +189,12 @@ const fetchAllOrders = async () => {
             key: 'E6kUTYrYwZq2tN4QEtyzsbEBk3ie'
           }
         })
-        console.log('orders API data:', response.data);
         const data = response.data.data || response.data
         if (!data.length) break
         fetched = fetched.concat(data)
         if (data.length < limit) break
         currentPage++
-        await new Promise(res => setTimeout(res, 125))
+        await new Promise(res => setTimeout(res, 300))
       } catch (err) {
         if (err.response && err.response.status === 429) {
           error.value = 'Слишком много запросов к API. Попробуйте уменьшить диапазон дат или повторите попытку позже.'
