@@ -41,11 +41,23 @@
       </thead>
       <tbody>
         <tr v-for="(row, index) in orders" :key="row.order_id + '-' + index">
-          <td v-for="key in tableHeaders" :key="key" :class="key" v-html="highlightMatch(row[key])"></td>
+          <td v-for="key in tableHeaders" :key="key" :class="key">
+            <span v-if="key === 'g_number'">
+              <a href="#" @click.prevent="showDetails(row)" v-html="highlightMatch(row[key])"></a>
+            </span>
+            <span v-else v-html="highlightMatch(row[key])"></span>
+          </td>
         </tr>
       </tbody>
     </table>
     <div v-else-if="!loading">No data</div>
+
+    <DetailsPopup
+      :data="popupData"
+      title="Детали заказа"
+      :labels="tableHeaderLabels"
+      @close="closePopup"
+    />
   </div>
 </template>
 
@@ -57,6 +69,7 @@ import Chart from '../components/Chart.vue'
 import SearchBar from '../components/SearchBar.vue'
 import ColumnFilters from '../components/ColumnFilters.vue'
 import Pagination from '../components/Pagination.vue'
+import DetailsPopup from '../components/DetailsPopup.vue'
 import '../scss/dashboard.scss'
 
 function formatDate(date) {
@@ -88,6 +101,31 @@ const tableHeaderLabels = {
   last_change_date: 'Дата изменения',
   supplier_article: 'Артикул поставщика',
   tech_size: 'Размер',
+  // остальные для попапа:
+  order_id: 'ID заказа',
+  warehouse_name: 'Склад',
+  oblast_okrug_name: 'Округ',
+  oblast_name: 'Область',
+  region_name: 'Регион',
+  country_name: 'Страна',
+  subject: 'Предмет',
+  category: 'Категория',
+  brand: 'Бренд',
+  barcode: 'Штрихкод',
+  nm_id: 'NM ID',
+  income_id: 'ID прихода',
+  is_realization: 'Реализация',
+  is_supply: 'Поставка',
+  odid: 'ODID',
+  spp: 'СПП',
+  price_with_disc: 'Цена со скидкой',
+  discount_percent: 'Скидка, %',
+  finished_price: 'Итоговая цена',
+  for_pay: 'К выплате',
+  promo_code_discount: 'Скидка по промокоду',
+  promo_code: 'Промокод',
+  sticker: 'Стикер',
+  srid: 'SRID'
 }
 
 tableHeaders.forEach(header => {
@@ -97,6 +135,7 @@ tableHeaders.forEach(header => {
 const hasMore = ref(false)
 const allOrders = ref([])
 const progress = ref('')
+const popupData = ref(null)
 
 const filteredOrders = computed(() => {
   let filtered = allOrders.value
@@ -220,6 +259,14 @@ function applySearch() {
 
 function updateColumnFilter(header, value) {
   columnFilters.value[header] = value
+}
+
+function showDetails(row) {
+  popupData.value = row
+}
+
+function closePopup() {
+  popupData.value = null
 }
 
 watch([activeSearchQuery, () => Object.values(columnFilters.value).join(), page], () => {

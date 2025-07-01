@@ -42,11 +42,23 @@
       </thead>
       <tbody>
         <tr v-for="(row, index) in incomes" :key="row.income_id + '-' + index">
-          <td v-for="key in tableHeaders" :key="key" :class="key" v-html="highlightMatch(row[key])"></td>
+          <td v-for="key in tableHeaders" :key="key" :class="key">
+            <span v-if="key === 'income_id'">
+              <a href="#" @click.prevent="showDetails(row)" v-html="highlightMatch(row[key])"></a>
+            </span>
+            <span v-else v-html="highlightMatch(row[key])"></span>
+          </td>
         </tr>
       </tbody>
     </table>
     <div v-else-if="!loading">No data</div>
+
+    <DetailsPopup
+      :data="popupData"
+      title="Детали прихода"
+      :labels="tableHeaderLabels"
+      @close="closePopup"
+    />
   </div>
 </template>
 
@@ -58,6 +70,7 @@ import Chart from '../components/Chart.vue'
 import SearchBar from '../components/SearchBar.vue'
 import ColumnFilters from '../components/ColumnFilters.vue'
 import Pagination from '../components/Pagination.vue'
+import DetailsPopup from '../components/DetailsPopup.vue'
 import '../scss/dashboard.scss'
 
 // Format date as YYYY-MM-DD
@@ -91,7 +104,21 @@ const tableHeaderLabels = {
   supplier_article: 'Артикул поставщика',
   quantity: 'Количество',
   total_price: 'Общая цена',
-  warehouse_name: 'Склад'
+  warehouse_name: 'Склад',
+  // остальные для попапа:
+  last_change_date: 'Дата изменения',
+  tech_size: 'Размер',
+  barcode: 'Штрихкод',
+  category: 'Категория',
+  country_name: 'Страна',
+  brand: 'Бренд',
+  subject: 'Предмет',
+  nm_id: 'NM ID',
+  oblast_okrug_name: 'Округ',
+  oblast_name: 'Область',
+  region_name: 'Регион',
+  sticker: 'Стикер',
+  srid: 'SRID'
 }
 
 // Инициализируем фильтры для всех колонок
@@ -102,6 +129,7 @@ tableHeaders.forEach(header => {
 const hasMore = ref(false)
 const allIncomes = ref([])
 const progress = ref('')
+const popupData = ref(null)
 
 // Фильтрация данных
 const filteredIncomes = computed(() => {
@@ -221,6 +249,14 @@ function applySearch() {
 
 function updateColumnFilter(header, value) {
   columnFilters.value[header] = value
+}
+
+function showDetails(row) {
+  popupData.value = row
+}
+
+function closePopup() {
+  popupData.value = null
 }
 
 // Следим за изменением фильтров, поиска и страницы

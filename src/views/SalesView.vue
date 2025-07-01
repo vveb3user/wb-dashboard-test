@@ -52,18 +52,12 @@
     </table>
     <div v-else-if="!loading">No data</div>
 
-    <div v-if="popupData" class="popup-overlay" @click.self="closePopup">
-      <div class="popup popup--large">
-        <h3 class="popup__title">Детали продажи</h3>
-        <table class="popup__table">
-          <tr v-for="(value, key) in popupData" :key="key">
-            <td><b>{{ tableHeaderLabels[key] || key }}</b></td>
-            <td>{{ formatValue(value, key) }}</td>
-          </tr>
-        </table>
-        <button class="popup__button" @click="closePopup">Закрыть</button>
-      </div>
-    </div>
+    <DetailsPopup
+      :data="popupData"
+      title="Детали продажи"
+      :labels="tableHeaderLabels"
+      @close="closePopup"
+    />
   </div>
 </template>
 
@@ -75,6 +69,7 @@ import Chart from '../components/Chart.vue'
 import SearchBar from '../components/SearchBar.vue'
 import ColumnFilters from '../components/ColumnFilters.vue'
 import Pagination from '../components/Pagination.vue'
+import DetailsPopup from '../components/DetailsPopup.vue'
 import '../scss/dashboard.scss'
 
 function formatDate(date) {
@@ -282,6 +277,15 @@ function highlightMatch(value) {
   return String(value).replace(re, '<span class=\"chart__highlight\">$1</span>')
 }
 
+
+
+function showDetails(row) {
+  popupData.value = row
+}
+function closePopup() {
+  popupData.value = null
+}
+
 function formatValue(val, key) {
   // Округляем числа до сотых
   if (typeof val === 'number') {
@@ -294,13 +298,6 @@ function formatValue(val, key) {
     }
   }
   return val
-}
-
-function showDetails(row) {
-  popupData.value = row
-}
-function closePopup() {
-  popupData.value = null
 }
 
 onMounted(fetchAllSales)
