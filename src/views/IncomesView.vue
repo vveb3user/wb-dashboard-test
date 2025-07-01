@@ -19,16 +19,12 @@
       v-model="searchQuery"
       @search="applySearch"
     />
-    <div class="search__filters">
-      <div v-for="header in tableHeaders" :key="header" class="search__filter-group">
-        <label>{{ header }}:</label>
-        <input 
-          type="text" 
-          v-model="columnFilters[header]" 
-          :placeholder="`Filter ${header}...`"
-        />
-      </div>
-    </div>
+    <ColumnFilters
+      :headers="tableHeaders"
+      :labels="tableHeaderLabels"
+      :filters="columnFilters"
+      @update:filter="updateColumnFilter"
+    />
     <div v-if="error" class="table__error">{{ error }}</div>
     <div v-if="loading">Loading...</div>
     <div v-if="progress">{{ progress }}</div>
@@ -40,7 +36,7 @@
     <table v-if="!loading && incomes.length" class="table">
       <thead>
         <tr>
-          <th v-for="key in tableHeaders" :key="key" :class="key">{{ key }}</th>
+          <th v-for="key in tableHeaders" :key="key" :class="key">{{ tableHeaderLabels[key] }}</th>
         </tr>
       </thead>
       <tbody>
@@ -59,6 +55,7 @@ import axios from 'axios'
 import DateFilter from '../components/DateFilter.vue'
 import Chart from '../components/Chart.vue'
 import SearchBar from '../components/SearchBar.vue'
+import ColumnFilters from '../components/ColumnFilters.vue'
 import '../scss/dashboard.scss'
 
 // Format date as YYYY-MM-DD
@@ -85,6 +82,15 @@ const tableHeaders = [
   'total_price',
   'warehouse_name'
 ]
+
+const tableHeaderLabels = {
+  income_id: 'ID прихода',
+  date: 'Дата прихода',
+  supplier_article: 'Артикул поставщика',
+  quantity: 'Количество',
+  total_price: 'Общая цена',
+  warehouse_name: 'Склад'
+}
 
 // Инициализируем фильтры для всех колонок
 tableHeaders.forEach(header => {
@@ -209,6 +215,10 @@ function applySearch() {
   activeSearchQuery.value = searchQuery.value
   page.value = 1
   updatePageIncomes()
+}
+
+function updateColumnFilter(header, value) {
+  columnFilters.value[header] = value
 }
 
 // Следим за изменением фильтров, поиска и страницы

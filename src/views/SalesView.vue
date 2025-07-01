@@ -19,16 +19,12 @@
       v-model="searchQuery"
       @search="applySearch"
     />
-    <div class="search__filters">
-      <div v-for="header in tableHeaders" :key="header" class="search__filter-group">
-        <label>{{ tableHeaderLabels[header] }}</label>
-        <input 
-          type="text" 
-          v-model="columnFilters[header]" 
-          :placeholder="`Фильтр по ${tableHeaderLabels[header]}...`"
-        />
-      </div>
-    </div>
+    <ColumnFilters
+      :headers="tableHeaders"
+      :labels="tableHeaderLabels"
+      :filters="columnFilters"
+      @update:filter="updateColumnFilter"
+    />
     <div v-if="error" class="table__error">{{ error }}</div>
     <div v-if="progress">{{ progress }}</div>
     <div class="table__pagination">
@@ -76,6 +72,7 @@ import axios from 'axios'
 import DateFilter from '../components/DateFilter.vue'
 import Chart from '../components/Chart.vue'
 import SearchBar from '../components/SearchBar.vue'
+import ColumnFilters from '../components/ColumnFilters.vue'
 import '../scss/dashboard.scss'
 
 function formatDate(date) {
@@ -258,6 +255,10 @@ function applySearch() {
   activeSearchQuery.value = searchQuery.value
   page.value = 1
   updatePageSales()
+}
+
+function updateColumnFilter(header, value) {
+  columnFilters.value[header] = value
 }
 
 watch([activeSearchQuery, () => Object.values(columnFilters.value).join(), page], () => {
