@@ -65,6 +65,7 @@ import { usePagination } from '../composables/usePagination.js'
 import { useTableFilters } from '../composables/useTableFilters.js'
 import { useApiData } from '../composables/useApiData.js'
 import { useDetailsPopup } from '../composables/useDetailsPopup.js'
+import { useChartData } from '../composables/useChartData.js'
 import { salesTableHeaders, salesTableLabels } from '../config/salesTable.js'
 import { formatDate } from '../utils/dateUtils.js'
 import '../scss/dashboard.scss'
@@ -114,23 +115,7 @@ const filteredSales = computed(() => {
   return filterData(allSales.value)
 })
 
-const maxQuantity = computed(() => {
-  const chart = chartData.value
-  return chart.length ? Math.max(...chart.map(r => Number(r.quantity) || 0)) : 1
-})
-
-const chartData = computed(() => {
-  const counts = {}
-  filteredSales.value.forEach(row => {
-    if (!row.supplier_article) return
-    counts[row.supplier_article] = (counts[row.supplier_article] || 0) + 1
-  })
-  const chartArr = Object.entries(counts).map(([supplier_article, count]) => ({
-    supplier_article,
-    quantity: count
-  }))
-  return chartArr.sort((a, b) => b.quantity - a.quantity).slice(0, 10)
-})
+const { chartData, maxQuantity } = useChartData(filteredSales)
 
 const fetchAllSales = () => {
   fetchAllData(updatePageSales, resetPage, hasMore)
